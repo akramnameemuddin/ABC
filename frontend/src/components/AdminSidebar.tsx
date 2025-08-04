@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Users, Settings, Brain, Headphones, Zap, Globe, BarChart2 } from 'lucide-react';
+import { Home, Users, Settings, Brain, Zap, Globe, BarChart2 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 
 interface SidebarProps {
@@ -19,7 +19,6 @@ const AdminSidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
     { path: '', icon: Home, label: 'Home' },
     { path: '/dashboard', icon: BarChart2, label: 'Dashboard' },
     { path: '/smart-classification', icon: Brain, label: 'Smart Classification' },
-    { path: '/real-time-support', icon: Headphones, label: 'Real-time Support' },
     { path: '/quick-resolution', icon: Zap, label: 'Quick Resolution' },
     { path: '/multi-lingual', icon: Globe, label: 'Multi-lingual' },
     { path: '/staff', icon: Users, label: 'Staff Management' },

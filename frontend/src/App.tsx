@@ -22,6 +22,7 @@ import TrackStatus from './pages/TrackStatus';
 import Help from './pages/Help';
 import FeedbackForm from './pages/FeedbackForm';
 import ContactStaff from './pages/ContactStaff';
+import RealTimeSupport from './pages/RealTimeSupport';
 
 import './styles/translate.css';
 import './index.css';
@@ -186,7 +187,6 @@ const App = () => {
               <Route index element={<AdminHome />} />
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="smart-classification" element={<SmartClassification />} />
-              <Route path="real-time-support" element={<ContactStaff />} />
               <Route path="quick-resolution" element={<QuickResolution />} />
               <Route path="multi-lingual" element={<MultiLingual />} />
               <Route path="staff" element={<Staff />} />
@@ -207,7 +207,7 @@ const App = () => {
               <Route path="file-complaint" element={<FileComplaint />} />
               <Route path="track-status" element={<TrackStatus />} />
               <Route path="ai-assistance" element={<AIAssistance />} />
-              <Route path="real-time-support" element={<ContactStaff />} />
+              <Route path="real-time-support" element={<RealTimeSupport />} />
               <Route path="quick-resolution" element={<ContactStaff />} />
               <Route path="multi-lingual" element={<MultiLingual />} />
               <Route path="help" element={<Help />} />
@@ -223,7 +223,7 @@ const App = () => {
             <Route path="/smart-classification" element={<Navigate to="/admin-dashboard/smart-classification" />} />
             <Route path="/track-status" element={<Navigate to="/user-dashboard/track-status" />} />
             <Route path="/ai-assistance" element={<Navigate to="/user-dashboard/ai-assistance" />} />
-            <Route path="/real-time-support" element={<Navigate to={userType === 'admin' ? '/admin-dashboard/real-time-support' : '/user-dashboard/real-time-support'} />} />
+            <Route path="/real-time-support" element={<Navigate to="/user-dashboard/real-time-support" />} />
             <Route path="/quick-resolution" element={<Navigate to={userType === 'admin' ? '/admin-dashboard/quick-resolution' : '/user-dashboard/quick-resolution'} />} />
             <Route path="/multi-lingual" element={<Navigate to={userType === 'admin' ? '/admin-dashboard/multi-lingual' : '/user-dashboard/multi-lingual'} />} />
             <Route path="/help" element={<Navigate to="/user-dashboard/help" />} />
