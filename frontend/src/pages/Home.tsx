@@ -94,7 +94,7 @@ const Home = () => {
   };
 
   const handleComplaintClick = (complaintId: number) => {
-    navigate('/track-status', { state: { searchComplaintId: complaintId } });
+    navigate('/user-dashboard/track-status', { state: { searchComplaintId: complaintId } });
   };
 
   const getStatusColor = (status: string) => {
@@ -126,12 +126,12 @@ const Home = () => {
 
   // Quick links data for navigation
   const quickLinks = [
-    { icon: <FileText className="h-5 w-5" />, text: "File Complaint", path: "/file-complaint" },
-    { icon: <BarChart2 className="h-5 w-5" />, text: "Track Status", path: "/track-status" },
-    { icon: <Headphones className="h-5 w-5" />, text: "Real-Time Support", path: "/real-time-support" },
-    { icon: <Globe className="h-5 w-5" />, text: "Change Language", path: "/multi-lingual" },
-    { icon: <Bell className="h-5 w-5" />, text: "Notifications", path: "/notifications" },
-    { icon: <HelpCircle className="h-5 w-5" />, text: "Help & FAQs", path: "/faqs" },
+    { icon: <FileText className="h-5 w-5" />, text: "File Complaint", path: "/user-dashboard/file-complaint" },
+    { icon: <BarChart2 className="h-5 w-5" />, text: "Track Status", path: "/user-dashboard/track-status" },
+    { icon: <Headphones className="h-5 w-5" />, text: "Real-Time Support", path: "/user-dashboard/real-time-support" },
+    { icon: <Globe className="h-5 w-5" />, text: "Change Language", path: "/user-dashboard/multi-lingual" },
+    { icon: <Bell className="h-5 w-5" />, text: "Notifications", path: "/user-dashboard/settings" },
+    { icon: <HelpCircle className="h-5 w-5" />, text: "Help & FAQs", path: "/user-dashboard/help" },
   ];
 
   // Common routes for rail travelers
@@ -167,14 +167,14 @@ const Home = () => {
             </p>
             <div className="flex flex-wrap gap-4">
               <Link 
-                to="/file-complaint" 
+                to="/user-dashboard/file-complaint" 
                 className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center gap-2 shadow-md hover:shadow-lg"
               >
                 <Send className="h-5 w-5" />
                 File a Complaint
               </Link>
               <Link 
-                to="/track-status" 
+                to="/user-dashboard/track-status" 
                 className={`px-6 py-3 rounded-lg transition-colors flex items-center gap-2 shadow-md hover:shadow-lg ${
                   isDark 
                     ? 'bg-gray-700 text-white hover:bg-gray-600' 
@@ -185,7 +185,7 @@ const Home = () => {
                 Track Status
               </Link>
               <Link 
-                to="/real-time-support" 
+                to="/user-dashboard/real-time-support" 
                 className={`px-6 py-3 rounded-lg transition-colors flex items-center gap-2 shadow-md hover:shadow-lg ${
                   isDark 
                     ? 'bg-blue-800 text-white hover:bg-blue-700' 

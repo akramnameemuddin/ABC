@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import { Routes, Route, Navigate, Outlet, Link } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
 import Layout from './components/Layout';
 import Home from './pages/Home';
@@ -232,6 +232,54 @@ const App = () => {
             <Route path="/staff" element={<Navigate to="/admin-dashboard/staff" />} />
             <Route path="/settings" element={<Navigate to={userType === 'admin' ? '/admin-dashboard/settings' : '/user-dashboard/settings'} />} />
             <Route path="/profile" element={<Navigate to={userType === 'admin' ? '/admin-dashboard/profile' : '/user-dashboard/profile'} />} />
+            
+            {/* Additional missing routes that are referenced */}
+            <Route path="/tutorials" element={<Navigate to="/user-dashboard/help" />} />
+            <Route path="/quick-tips" element={<Navigate to="/user-dashboard/help" />} />
+            <Route path="/complaints" element={<Navigate to="/user-dashboard/file-complaint" />} />
+            <Route path="/track-complaint" element={<Navigate to="/user-dashboard/track-status" />} />
+            <Route path="/feedback" element={<Navigate to="/user-dashboard/feedback-form" />} />
+            <Route path="/notifications" element={<Navigate to="/user-dashboard/settings" />} />
+            <Route path="/faqs" element={<Navigate to="/user-dashboard/help" />} />
+            <Route path="/routes" element={<Navigate to="/user-dashboard" />} />
+            <Route path="/unauthorized" element={
+              <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
+                <div className="text-center">
+                  <h1 className="text-4xl font-bold text-red-600 mb-4">Unauthorized</h1>
+                  <p className="text-xl text-gray-600 dark:text-gray-400 mb-8">You don't have permission to access this page</p>
+                  <Link 
+                    to="/login" 
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                  >
+                    Go to Login
+                  </Link>
+                </div>
+              </div>
+            } />
+            
+            {/* 404 Catch-all route */}
+            <Route path="*" element={
+              <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
+                <div className="text-center">
+                  <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">404</h1>
+                  <p className="text-xl text-gray-600 dark:text-gray-400 mb-8">Page not found</p>
+                  <div className="space-x-4">
+                    <Link 
+                      to="/" 
+                      className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                    >
+                      Go Home
+                    </Link>
+                    <Link 
+                      to="/login" 
+                      className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                    >
+                      Login
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            } />
           </Routes>
           <Outlet />
         </div>

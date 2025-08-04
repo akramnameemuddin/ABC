@@ -147,7 +147,7 @@ const Help = () => {
           }
           break;
         case 'chat':
-          navigate('/real-time-support');
+          navigate('/user-dashboard/real-time-support');
           break;
         case 'call':
           window.open('tel:139', '_self');
@@ -812,25 +812,25 @@ const Help = () => {
               </h3>
               <div className="space-y-2 text-sm">
                 <button
-                  onClick={() => navigate('/complaints')}
+                  onClick={() => navigate('/user-dashboard/file-complaint')}
                   className="block w-full text-left text-blue-500 hover:text-blue-400"
                 >
                   File a Complaint →
                 </button>
                 <button
-                  onClick={() => navigate('/track-complaint')}
+                  onClick={() => navigate('/user-dashboard/track-status')}
                   className="block w-full text-left text-blue-500 hover:text-blue-400"
                 >
                   Track Complaint Status →
                 </button>
                 <button
-                  onClick={() => navigate('/real-time-support')}
+                  onClick={() => navigate('/user-dashboard/real-time-support')}
                   className="block w-full text-left text-blue-500 hover:text-blue-400"
                 >
                   Start Live Chat →
                 </button>
                 <button
-                  onClick={() => navigate('/feedback')}
+                  onClick={() => navigate('/user-dashboard/feedback-form')}
                   className="block w-full text-left text-blue-500 hover:text-blue-400"
                 >
                   Provide Feedback →
@@ -848,7 +848,7 @@ const Help = () => {
               </div>
               <div className="flex gap-3">
                 <button
-                  onClick={() => navigate('/real-time-support')}
+                  onClick={() => navigate('/user-dashboard/real-time-support')}
                   className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors flex items-center gap-2"
                 >
                   <MessageCircle className="h-4 w-4" />

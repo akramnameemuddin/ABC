@@ -215,13 +215,13 @@ const AdminHome = () => {
           </p>
           <div className="flex flex-wrap gap-4">
             <Link 
-              to="/dashboard" 
+              to="/admin-dashboard/dashboard" 
               className="px-6 py-3 bg-white text-indigo-600 rounded-lg font-medium hover:bg-indigo-50 transition-colors shadow-md hover:shadow-lg"
             >
               View Dashboard
             </Link>
             <Link 
-              to="/staff" 
+              to="/admin-dashboard/staff" 
               className="px-6 py-3 bg-indigo-700 text-white rounded-lg font-medium hover:bg-indigo-800 transition-colors shadow-md hover:shadow-lg"
             >
               Manage Staff
@@ -316,7 +316,7 @@ const AdminHome = () => {
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <Link 
-            to="/dashboard" 
+            to="/admin-dashboard/dashboard" 
             className={`flex flex-col items-center p-6 rounded-lg border transition-all duration-300 ${cardHoverClass} transform hover:translate-y-[-4px]`}
           >
             <div className={`w-16 h-16 rounded-full flex items-center justify-center mb-4 ${isDark ? 'bg-indigo-900/50' : 'bg-indigo-100'}`}>
@@ -329,7 +329,7 @@ const AdminHome = () => {
           </Link>
           
           <Link 
-            to="/staff" 
+            to="/admin-dashboard/staff" 
             className={`flex flex-col items-center p-6 rounded-lg border transition-all duration-300 ${cardHoverClass} transform hover:translate-y-[-4px]`}
           >
             <div className={`w-16 h-16 rounded-full flex items-center justify-center mb-4 ${isDark ? 'bg-blue-900/50' : 'bg-blue-100'}`}>
@@ -342,7 +342,7 @@ const AdminHome = () => {
           </Link>
           
           <Link 
-            to="/quick-resolution" 
+            to="/admin-dashboard/quick-resolution" 
             className={`flex flex-col items-center p-6 rounded-lg border transition-all duration-300 ${cardHoverClass} transform hover:translate-y-[-4px]`}
           >
             <div className={`w-16 h-16 rounded-full flex items-center justify-center mb-4 ${isDark ? 'bg-yellow-900/50' : 'bg-yellow-100'}`}>
@@ -355,7 +355,7 @@ const AdminHome = () => {
           </Link>
           
           <Link 
-            to="/settings" 
+            to="/admin-dashboard/settings" 
             className={`flex flex-col items-center p-6 rounded-lg border transition-all duration-300 ${cardHoverClass} transform hover:translate-y-[-4px]`}
           >
             <div className={`w-16 h-16 rounded-full flex items-center justify-center mb-4 ${isDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
@@ -387,7 +387,7 @@ const AdminHome = () => {
             <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'} mb-4`}>
               AI-powered complaint classification for faster routing and resolution of passenger issues.
             </p>
-            <Link to="/smart-classification" className="flex items-center gap-2 text-indigo-500 text-sm font-medium group">
+            <Link to="/admin-dashboard/smart-classification" className="flex items-center gap-2 text-indigo-500 text-sm font-medium group">
               <span>Learn more</span>
               <span className="group-hover:translate-x-1 transition-transform">→</span>
             </Link>
@@ -415,7 +415,7 @@ const AdminHome = () => {
             <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'} mb-4`}>
               Support for multiple Indian languages to serve diverse passengers across the country.
             </p>
-            <Link to="/multi-lingual" className="flex items-center gap-2 text-green-500 text-sm font-medium group">
+            <Link to="/admin-dashboard/multi-lingual" className="flex items-center gap-2 text-green-500 text-sm font-medium group">
               <span>Learn more</span>
               <span className="group-hover:translate-x-1 transition-transform">→</span>
             </Link>
