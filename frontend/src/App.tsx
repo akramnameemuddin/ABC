@@ -6,6 +6,7 @@ import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
 import AdminHome from './pages/AdminHome';
 import Login from './pages/Login'; 
+import LandingPage from './pages/LandingPage';
 import SmartClassification from './pages/SmartClassification';
 import QuickResolution from './pages/QuickResolution';
 import Staff from './pages/Staff';
@@ -60,11 +61,6 @@ const getUserType = (): 'admin' | 'user' | null => {
   }
   
   return null;
-};
-
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const userType = getUserType();
-  return userType ? <>{children}</> : <Navigate to="/login" />;
 };
 
 const AdminRoute = ({ children }: { children: React.ReactNode }) => {
@@ -157,6 +153,9 @@ const App = () => {
       <ThemeProvider>
         <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
           <Routes>
+            {/* Public Routes */}
+            <Route path="/landing" element={<LandingPage />} />
+            <Route path="/track-status" element={<TrackStatus />} />
             <Route path="/login" element={<Login />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             
@@ -165,13 +164,15 @@ const App = () => {
               <Route path="/admin-creator" element={<AdminCreator />} />
             )}
 
-            {/* Root route - redirect based on user type */}
+            {/* Root route - show landing page for non-authenticated, redirect based on user type if authenticated */}
             <Route 
               path="/" 
               element={
-                <ProtectedRoute>
-                  {userType === 'admin' ? <Navigate to="/admin-dashboard" /> : <Navigate to="/user-dashboard" />}
-                </ProtectedRoute>
+                userType ? (
+                  userType === 'admin' ? <Navigate to="/admin-dashboard" /> : <Navigate to="/user-dashboard" />
+                ) : (
+                  <LandingPage />
+                )
               } 
             />
 
