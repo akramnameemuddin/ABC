@@ -35,7 +35,7 @@ const LandingPage = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [animationLoaded, setAnimationLoaded] = useState(false);
+  const [animationLoaded, setAnimationLoaded] = useState(true); // Start with true to avoid loading screen
   const stackTriggerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -46,19 +46,17 @@ const LandingPage = () => {
       setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
     }, 5000);
 
-    // Initialize GSAP ScrollTrigger animation with sequential card arrangement
+    // Initialize GSAP ScrollTrigger animation - Simplified for better performance
     const initGSAPAnimation = async () => {
       try {
-        setAnimationLoaded(false);
-        
         // Dynamically import GSAP
         const { gsap } = await import('gsap');
         const { ScrollTrigger } = await import('gsap/ScrollTrigger');
         
         gsap.registerPlugin(ScrollTrigger);
 
-        // Wait for DOM to be ready
-        await new Promise(resolve => setTimeout(resolve, 300));
+        // Quick DOM ready check
+        await new Promise(resolve => setTimeout(resolve, 100));
 
         const cards = gsap.utils.toArray(".card-wrapper");
         if (cards.length === 0) {
@@ -66,136 +64,71 @@ const LandingPage = () => {
           return;
         }
 
-        // Set initial positions - cards stacked with proper spacing
+        // Set initial positions - cleaner stacking
         gsap.set(cards, {
-          y: (index: number) => index * 60,
-          scale: (index: number) => 1 - (index * 0.04),
-          rotationX: (index: number) => -index * 3,
-          rotationY: 0,
+          y: (index: number) => index * 30,
+          scale: (index: number) => 1 - (index * 0.03),
+          rotationX: (index: number) => -index * 2,
           transformOrigin: "center center",
-          clipPath: "inset(0% 0% 0% 0%)",
           zIndex: (index: number) => cards.length - index,
           opacity: 1
         });
 
-        // Create master timeline for sequential card animation
-        const masterTL = gsap.timeline({
+        // Simplified animation timeline
+        const tl = gsap.timeline({
           scrollTrigger: {
             trigger: ".trigger",
             start: "top top",
-            end: "+=400%",
-            scrub: 0.8,
+            end: "+=200%",
+            scrub: 0.5,
             pin: true,
             anticipatePin: 1,
-            invalidateOnRefresh: true,
-            refreshPriority: 0,
             onUpdate: (self) => {
-              setAnimationLoaded(true);
-              const progress = self.progress;
-              
-              // Update progress indicator
-              document.body.style.setProperty('--scroll-progress', progress.toString());
-              
-              // Add directional classes for smooth transitions
-              if (self.direction === 1) {
-                document.body.classList.add('scrolling-down');
-                document.body.classList.remove('scrolling-up');
-              } else {
-                document.body.classList.add('scrolling-up');
-                document.body.classList.remove('scrolling-down');
-              }
+              // Update progress
+              document.body.style.setProperty('--scroll-progress', self.progress.toString());
             }
           }
         });
 
-        // Animate each card sequentially
+        // Smoother card animation
         cards.forEach((card: any, index: number) => {
           if (index === 0) {
-            // First card stays in center position
-            masterTL.to(card, {
+            // First card animation
+            tl.to(card, {
               y: 0,
               scale: 1,
               rotationX: 0,
-              rotationY: 0,
-              duration: 2,
-              ease: "power2.inOut"
+              duration: 1,
+              ease: "power2.out"
             }, 0);
             return;
           }
 
-          // Sequential animation for each subsequent card
-          const startTime = index * 1.5; // Stagger timing
-          
-          // Phase 1: Move card to center (forward scroll)
-          masterTL.to(card, {
-            y: 0,
-            scale: 1,
-            rotationX: 0,
-            rotationY: 0,
-            clipPath: "inset(0% 0% 0% 0%)",
-            duration: 1.5,
-            ease: "power2.inOut"
-          }, startTime);
-
-          // Phase 2: Hold card in center briefly
-          masterTL.to(card, {
-            duration: 0.8
-          }, startTime + 1.5);
-
-          // Phase 3: Move card up and away (continue forward scroll)
-          masterTL.to(card, {
-            y: -index * 80,
-            scale: 0.9 - (index * 0.02),
-            rotationX: 5 + (index * 2),
-            rotationY: index * 1,
-            clipPath: `inset(0% 0% ${Math.min(index * 8, 25)}% 0%)`,
-            duration: 1.2,
-            ease: "power2.inOut"
-          }, startTime + 2.3);
+          // Sequential reveal for other cards
+          tl.to(card, {
+            y: -index * 15,
+            scale: 0.98 - (index * 0.02),
+            rotationX: -3 - (index * 2),
+            duration: 1,
+            ease: "power2.out"
+          }, index * 0.2);
         });
 
-        // Add breathing room at the end
-        masterTL.to({}, { duration: 2 });
-
-        // Refresh ScrollTrigger
         ScrollTrigger.refresh();
         setAnimationLoaded(true);
-
-        // Add custom scroll progress indicator
-        const progressIndicator = document.createElement('div');
-        progressIndicator.className = 'scroll-progress-indicator';
-        progressIndicator.innerHTML = `
-          <div class="progress-bar">
-            <div class="progress-fill"></div>
-          </div>
-          <div class="progress-text">Scroll to explore</div>
-        `;
-        document.body.appendChild(progressIndicator);
 
       } catch (error) {
         console.error('GSAP animation error:', error);
         setAnimationLoaded(true);
         
-        // Enhanced fallback CSS animation
+        // Lightweight fallback
         const style = document.createElement('style');
         style.textContent = `
           .card-wrapper {
-            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-            transform-origin: center center;
+            transition: all 0.3s ease;
           }
           .card-wrapper:hover {
-            transform: translateY(-20px) scale(1.02) rotateX(-5deg);
-            box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.3);
-          }
-          .card-wrapper:nth-child(odd) {
-            animation: float 6s ease-in-out infinite;
-          }
-          .card-wrapper:nth-child(even) {
-            animation: float 6s ease-in-out infinite reverse;
-          }
-          @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
+            transform: translateY(-5px) scale(1.02);
           }
         `;
         document.head.appendChild(style);
@@ -367,89 +300,62 @@ const LandingPage = () => {
     }
   ];
 
+  // Stack features with comprehensive information for landing page showcase
   const stackFeatures = [
     {
       id: 1,
       image: "https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=800&h=600&fit=crop&crop=center",
       title: "AI-Powered Smart Classification",
-      subtitle: "Intelligent Complaint Routing",
-      badge: "🤖 AI-Powered",
-      stats: { accuracy: "98.5%", speed: "3x faster", languages: "12+" },
+      subtitle: "Intelligent Complaint Processing",
+      badge: "🤖 AI-Enabled",
+      stats: { accuracy: "98.5%", speed: "3x faster", languages: "15+" },
       points: [
-        "Automatic categorization using advanced machine learning algorithms",
-        "Priority assignment based on real-time severity analysis and impact assessment",
-        "Intelligent routing to specialized departments with expert staff matching",
-        "Multi-language support with natural language processing capabilities"
+        "Automatic categorization using advanced machine learning",
+        "Smart priority assignment based on severity and impact",
+        "Intelligent routing to specialized railway departments",
+        "Multi-language support with natural language processing"
       ]
     },
     {
       id: 2,
       image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop&crop=center",
-      title: "Real-Time Tracking & Notifications",
-      subtitle: "Complete Transparency & Updates",
-      badge: "⚡ Real-time",
-      stats: { updates: "Live", channels: "5+", response: "< 30s" },
+      title: "Real-Time Tracking & Updates",
+      subtitle: "Complete Transparency",
+      badge: "⚡ Live Updates",
+      stats: { updates: "Real-time", channels: "5+", response: "< 30s" },
       points: [
-        "Live status updates throughout the entire resolution journey",
-        "Multi-channel notifications via SMS, email, push, and WhatsApp",
-        "Predictive resolution time estimates using historical data analysis",
-        "Interactive timeline with detailed progress milestones and checkpoints"
+        "Live status updates throughout resolution process",
+        "Multi-channel notifications via SMS, email, and app",
+        "Predictive resolution time estimates",
+        "Interactive progress timeline with milestones"
       ]
     },
     {
       id: 3,
       image: "https://images.unsplash.com/photo-1589254065878-42c9da997008?w=800&h=600&fit=crop&crop=center",
-      title: "Multi-Modal Communication Hub",
+      title: "Multi-Modal Communication",
       subtitle: "Voice, Video & Chat Support",
       badge: "🎥 Premium Support",
       stats: { availability: "24/7", experts: "500+", satisfaction: "4.9/5" },
       points: [
-        "Advanced voice-to-text complaint filing with accent recognition",
-        "HD video calls with certified railway support specialists",
-        "AI-powered chatbot with human escalation for complex issues",
-        "Screen sharing and visual troubleshooting for technical problems"
+        "Voice-to-text complaint filing with accent recognition",
+        "HD video calls with certified railway specialists",
+        "AI chatbot with seamless human escalation",
+        "Screen sharing for visual issue demonstration"
       ]
     },
     {
       id: 4,
       image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=600&fit=crop&crop=center",
-      title: "Advanced Analytics & Business Intelligence",
-      subtitle: "Data-Driven Decision Making",
+      title: "Advanced Analytics Dashboard",
+      subtitle: "Data-Driven Insights",
       badge: "📊 Analytics Pro",
-      stats: { insights: "Real-time", reports: "50+", accuracy: "99.2%" },
+      stats: { insights: "Live", reports: "50+", accuracy: "99%" },
       points: [
-        "Comprehensive sentiment analysis of passenger feedback and reviews",
-        "Predictive maintenance alerts using IoT sensors and ML models",
-        "Advanced performance metrics with customizable KPI dashboards",
-        "Trend analysis and forecasting for proactive service improvements"
-      ]
-    },
-    {
-      id: 5,
-      image: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=800&h=600&fit=crop&crop=center",
-      title: "Enterprise Security & Compliance",
-      subtitle: "Bank-Grade Protection",
-      badge: "🔒 Secure Certified",
-      stats: { security: "Military-grade", compliance: "100%", uptime: "99.99%" },
-      points: [
-        "End-to-end encryption with AES-256 for all data transmissions",
-        "Blockchain-verified audit trails for complete transparency and accountability",
-        "GDPR, SOC 2, and ISO 27001 compliance with regular security audits",
-        "Zero-trust architecture with multi-factor authentication and biometrics"
-      ]
-    },
-    {
-      id: 6,
-      image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&h=600&fit=crop&crop=center",
-      title: "Smart Integration Ecosystem",
-      subtitle: "Seamless Railway Operations",
-      badge: "🔗 Integration Ready",
-      stats: { integrations: "200+", apis: "RESTful", sync: "Real-time" },
-      points: [
-        "Native integration with existing railway management systems",
-        "RESTful APIs for third-party applications and custom workflows",
-        "Real-time synchronization with ticketing and scheduling platforms",
-        "Automated escalation to emergency services for critical safety issues"
+        "Comprehensive sentiment analysis of feedback",
+        "Predictive maintenance alerts using IoT data",
+        "Customizable performance metrics dashboard",
+        "Trend analysis for proactive improvements"
       ]
     }
   ];
@@ -584,18 +490,18 @@ const LandingPage = () => {
               />
             </div>
 
-            <h1 className={`text-3xl md:text-4xl lg:text-6xl font-bold mb-4 md:mb-6 ${isVisible ? 'animate-fade-in' : 'opacity-0'}`}>
-              <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent animate-pulse">
-                Your Journey,
+            <h1 className={`text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6 ${isVisible ? 'animate-fade-in' : 'opacity-0'}`}>
+              <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                Smart Railway
               </span>
               <br />
               <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-red-600 bg-clip-text text-transparent">
-                Our Commitment
+                Complaint Resolution
               </span>
             </h1>
             
             <p className={`text-lg md:text-xl lg:text-2xl mb-6 md:mb-8 max-w-3xl mx-auto ${isDark ? 'text-gray-300' : 'text-gray-600'} ${isVisible ? 'animate-fade-in-delay-1' : 'opacity-0'} px-4`}>
-              Next-generation Railway Complaint Resolution with AI-powered smart classification, real-time tracking, voice support, and 24/7 assistance
+              AI-powered platform for instant complaint filing, real-time tracking, and 24/7 support. Making your railway journey smooth and hassle-free.
             </p>
 
             <div className={`flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6 mb-8 md:mb-12 px-4 ${isVisible ? 'animate-fade-in-delay-2' : 'opacity-0'}`}>
@@ -637,34 +543,29 @@ const LandingPage = () => {
         <div className="hero" style={{ 
           background: isDark ? 'linear-gradient(135deg, #1f2937 0%, #374151 100%)' : 'linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%)',
         }}>
-          <h2 className="text-3xl md:text-5xl lg:text-7xl font-bold mb-6 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent text-center px-4">
-            One True Railway Solution to Rule Them All
+          <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent text-center px-4">
+            Revolutionary Railway Experience
           </h2>
-          <p className="text-lg md:text-2xl lg:text-3xl text-gray-600 dark:text-gray-400 text-center max-w-4xl px-4">
-            From Passenger Complaints to Enterprise Solutions
+          <p className="text-lg md:text-xl lg:text-2xl text-gray-600 dark:text-gray-400 text-center max-w-3xl px-4 mb-8">
+            Advanced AI-powered complaint resolution system transforming how passengers interact with Indian Railways
           </p>
-          <div className="mt-8 text-center">
+          <div className="text-center">
             <div className="inline-block animate-bounce">
               <ArrowRight className="h-6 w-6 md:h-8 md:w-8 text-indigo-600 transform rotate-90" />
             </div>
-            <p className="text-sm md:text-base text-gray-500 mt-2">Scroll to explore features</p>
+            <p className="text-sm md:text-base text-gray-500 mt-2">Discover innovative features below</p>
           </div>
         </div>
 
-        {/* Loading Screen */}
+        {/* Quick Loading Screen - Shows only briefly */}
         {!animationLoaded && (
-          <div className="fixed inset-0 bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 z-50 flex items-center justify-center">
+          <div className="fixed inset-0 bg-gradient-to-br from-indigo-900/90 via-purple-900/90 to-pink-900/90 z-30 flex items-center justify-center backdrop-blur-sm">
             <div className="text-center">
-              <div className="w-20 h-20 mb-8 mx-auto">
-                <div className="w-full h-full border-4 border-white/20 border-t-white rounded-full animate-spin"></div>
+              <div className="w-16 h-16 mb-6 mx-auto">
+                <div className="w-full h-full border-3 border-white/30 border-t-white rounded-full animate-spin"></div>
               </div>
-              <h3 className="text-2xl font-bold text-white mb-4">Loading Interactive Experience</h3>
-              <p className="text-white/80 text-lg">Preparing your journey through Rail Madad features...</p>
-              <div className="mt-6 flex justify-center space-x-2">
-                <div className="w-3 h-3 bg-white rounded-full animate-bounce" style={{ animationDelay: '0s' }}></div>
-                <div className="w-3 h-3 bg-white rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                <div className="w-3 h-3 bg-white rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
-              </div>
+              <h3 className="text-xl font-bold text-white mb-2">Loading Experience</h3>
+              <p className="text-white/80">Preparing features...</p>
             </div>
           </div>
         )}
@@ -767,10 +668,10 @@ const LandingPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12 md:mb-16">
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-              Revolutionary Features for Modern Railways
+              Comprehensive Railway Solutions
             </h2>
             <p className={`text-lg md:text-xl ${isDark ? 'text-gray-400' : 'text-gray-600'} px-4`}>
-              Cutting-edge technology for seamless complaint resolution
+              Experience cutting-edge technology designed for modern railway passengers
             </p>
           </div>
 
@@ -1163,12 +1064,11 @@ const LandingPage = () => {
       <style>{`
         .trigger {
           position: relative;
-          height: 500vh; /* Increased for smooth sequential animation */
+          height: 300vh; /* Optimized height */
         }
         
         .hero {
           height: 100vh;
-          width: 100%;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -1177,12 +1077,11 @@ const LandingPage = () => {
           position: sticky;
           top: 0;
           z-index: 10;
-          background: inherit;
         }
         
         .extra-trigger {
           position: relative;
-          height: 400vh; /* More space for sequential animation */
+          height: 200vh; /* Compact animation space */
         }
         
         .card-container {
@@ -1192,206 +1091,102 @@ const LandingPage = () => {
           display: flex;
           align-items: center;
           justify-content: center;
-          perspective: 1500px;
+          perspective: 1000px;
           overflow: hidden;
-          z-index: 5;
         }
         
         .card-wrapper {
           position: absolute;
           width: 90%;
-          max-width: 1100px;
-          height: 80vh;
-          max-height: 650px;
+          max-width: 1000px;
+          height: 75vh;
+          max-height: 600px;
           transform-style: preserve-3d;
           will-change: transform;
-          backface-visibility: hidden;
-          transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+          transition: all 0.3s ease;
         }
         
         .card {
           position: relative;
           width: 100%;
           height: 100%;
-          transform-style: preserve-3d;
-          will-change: transform;
-          backface-visibility: hidden;
           border-radius: 1.5rem;
           overflow: hidden;
-          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-          border: 1px solid rgba(255, 255, 255, 0.1);
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
           backdrop-filter: blur(10px);
         }
 
-        /* Scroll Progress Indicator */
+        /* Simplified progress indicator */
         .scroll-progress-indicator {
           position: fixed;
           top: 50%;
           right: 20px;
           transform: translateY(-50%);
-          z-index: 1000;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 10px;
+          z-index: 100;
         }
 
         .progress-bar {
           width: 4px;
-          height: 200px;
-          background: rgba(255, 255, 255, 0.2);
+          height: 100px;
+          background: rgba(255, 255, 255, 0.3);
           border-radius: 2px;
           overflow: hidden;
-          position: relative;
         }
 
         .progress-fill {
           width: 100%;
           height: calc(var(--scroll-progress, 0) * 100%);
-          background: linear-gradient(to bottom, #6366f1, #8b5cf6, #ec4899);
-          border-radius: 2px;
-          transition: height 0.3s ease;
+          background: linear-gradient(to bottom, #6366f1, #8b5cf6);
+          transition: height 0.2s ease;
         }
 
-        .progress-text {
-          writing-mode: vertical-rl;
-          text-orientation: mixed;
-          font-size: 12px;
-          color: rgba(255, 255, 255, 0.7);
-          font-weight: 500;
-        }
-
-        /* Scrolling Direction Classes */
-        body.scrolling-down .card-wrapper {
-          transform-origin: center bottom;
-        }
-
-        body.scrolling-up .card-wrapper {
-          transform-origin: center top;
-        }
-
-        /* Enhanced hover effects */
-        .card-wrapper:hover .card {
-          transform: scale(1.02) rotateY(2deg);
-          box-shadow: 0 35px 70px -12px rgba(0, 0, 0, 0.4);
-        }
-        
+        /* Responsive design */
         @media (max-width: 768px) {
-          .trigger {
-            height: 400vh; /* Adjusted for mobile */
-          }
-          
-          .extra-trigger {
-            height: 300vh; /* Mobile-friendly spacing */
-          }
-          
+          .trigger { height: 250vh; }
+          .extra-trigger { height: 150vh; }
           .card-wrapper {
-            height: 70vh;
+            height: 65vh;
             width: 95%;
-            max-height: 500px;
+            max-height: 450px;
           }
-          
-          .hero {
-            padding: 1rem;
-            height: 90vh; /* Slightly shorter on mobile */
-          }
-
-          .scroll-progress-indicator {
-            right: 10px;
-            scale: 0.8;
-          }
-
-          .progress-bar {
-            height: 150px;
-          }
+          .hero { height: 85vh; padding: 1rem; }
+          .scroll-progress-indicator { display: none; }
         }
         
         @media (max-width: 480px) {
-          .trigger {
-            height: 350vh; /* Very compact for small screens */
-          }
-          
-          .extra-trigger {
-            height: 250vh;
-          }
-          
+          .trigger { height: 200vh; }
+          .extra-trigger { height: 100vh; }
           .card-wrapper {
-            height: 60vh;
-            max-height: 400px;
+            height: 55vh;
+            max-height: 350px;
             width: 98%;
           }
-          
-          .hero {
-            height: 80vh;
-            padding: 0.5rem;
-          }
-
-          .scroll-progress-indicator {
-            display: none; /* Hide on very small screens */
-          }
+          .hero { height: 75vh; padding: 0.5rem; }
         }
 
-        /* Smooth scrolling */
-        html {
-          scroll-behavior: smooth;
+        /* Smooth animations */
+        .animate-fade-in {
+          animation: fadeInUp 0.6s ease-out forwards;
         }
         
-        /* Enhanced Animation keyframes */
         @keyframes fadeInUp {
           from {
             opacity: 0;
-            transform: translateY(40px) scale(0.95);
+            transform: translateY(30px);
           }
           to {
             opacity: 1;
-            transform: translateY(0) scale(1);
+            transform: translateY(0);
           }
         }
-        
-        @keyframes cardFloat {
-          0%, 100% { 
-            transform: translateY(0px) rotateX(0deg); 
-          }
-          50% { 
-            transform: translateY(-8px) rotateX(-2deg); 
-          }
+
+        /* Enhanced hover effects */
+        .card-wrapper:hover {
+          transform: scale(1.02) rotateY(2deg);
         }
         
-        @keyframes shimmer {
-          0% { background-position: -200% 0; }
-          100% { background-position: 200% 0; }
-        }
-        
-        .animate-fade-in {
-          animation: fadeInUp 0.8s ease-out forwards;
-        }
-        
-        .animate-float {
-          animation: cardFloat 6s ease-in-out infinite;
-        }
-        
-        .animate-shimmer {
-          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-          background-size: 200% 100%;
-          animation: shimmer 2s infinite;
-        }
-        
-        /* Custom scrollbar for webkit browsers */
-        ::-webkit-scrollbar {
-          width: 8px;
-        }
-        
-        ::-webkit-scrollbar-track {
-          background: rgba(0, 0, 0, 0.1);
-        }
-        
-        ::-webkit-scrollbar-thumb {
-          background: linear-gradient(180deg, #6366f1, #8b5cf6);
-          border-radius: 4px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-          background: linear-gradient(180deg, #4f46e5, #7c3aed);
+        html {
+          scroll-behavior: smooth;
         }
       `}</style>
     </div>
